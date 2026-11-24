@@ -1,0 +1,12 @@
+{
+  "name": "ai-film-pipeline",
+  "description": "Generative AI film pipeline for Claude Code (ImagineArt + Blender + ffmpeg).",
+  "owner": { "name": "Harris-giki" },
+  "plugins": [
+    {
+      "name": "ai-film-pipeline",
+      "source": "./",
+      "description": "Make AI short films and trailers end to end with a director agent, 11 specialist agents and a human-in-the-loop web editor."
+    }
+  ]
+}

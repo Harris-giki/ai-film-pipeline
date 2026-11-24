@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+# user films and renders never go in the repo
+films/
+projects/
+renders/
+*.blend1
