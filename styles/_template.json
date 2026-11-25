@@ -1,0 +1,105 @@
+{
+  "label": "<Custom style name>",
+  "summary": "<one line>",
+  "look": "<describe>",
+  "character_medium": "<describe>",
+  "sheet_backdrop": "<describe>",
+  "plate_medium": "<describe>",
+  "vehicle_medium": "<describe>",
+  "motion": "<describe>",
+  "constraints": "<describe>",
+  "camera_language": [
+    "24 mm low-angle wide",
+    "35 mm over-the-shoulder with a foreground shoulder",
+    "50 mm medium two-shot",
+    "85 mm close-up, shallow focus",
+    "135 mm long-lens profile",
+    "insert close-up of a hand or prop",
+    "handheld follow",
+    "drone aerial establishing",
+    "car-mounted tracking",
+    "static locked-off wide"
+  ],
+  "lighting_menu": [
+    "golden hour backlight with warm rim",
+    "harsh noon sun with hard shadows",
+    "blue hour with warm practicals",
+    "neon pink and teal night light",
+    "single bare bulb interior, deep shadows",
+    "cool fluorescent interior with green cast",
+    "sunset magenta sky silhouette",
+    "overcast soft daylight",
+    "firelight flicker",
+    "headlights through fog"
+  ],
+  "post": {
+    "frame_step": null,
+    "pixelate": null,
+    "palette": null,
+    "texture": null
+  },
+  "grade": {
+    "lut": null,
+    "lut_mix": 0.577,
+    "halation": {
+      "knee": 0.8,
+      "sigma": 22,
+      "screen": 0.12,
+      "warm": [
+        1.0,
+        0.45,
+        0.15
+      ]
+    },
+    "eq": {
+      "contrast": 1.1,
+      "saturation": 1.18,
+      "gamma": 0.92
+    },
+    "bloom": {
+      "sigma": 14,
+      "screen": 0.1,
+      "body_ranges": []
+    },
+    "grain": {
+      "w": 1440,
+      "h": 810,
+      "luma": 8.0,
+      "opacity": 1.0
+    }
+  },
+  "target_metrics": {
+    "luma": 0.31,
+    "black_point": 0.035,
+    "white_point": 0.75,
+    "saturation": 0.5,
+    "contrast_std": 0.2
+  },
+  "pacing": {
+    "median_shot_s": 1.0,
+    "setups_per_minute": 40,
+    "cuts_per_clip": [
+      1,
+      3
+    ],
+    "montage_hit_s": [
+      0.2,
+      0.5
+    ],
+    "dialogue_shot_share": 0.5,
+    "title_by_s": 6
+  },
+  "critic": [
+    "faces stay the same person across shots (compare to the face sheet)",
+    "no plastic or waxy CGI skin",
+    "lighting matches the shot's LIGHTING line and the plate's time of day",
+    "blacks are deep, not milky",
+    "hands, cars and water obey physics (drop morphing takes)",
+    "no readable text or logos appear"
+  ],
+  "title": {
+    "colour": "ff6fb5",
+    "font_hint": "heavy rounded sans"
+  },
+  "id": "custom-<name>"
+}

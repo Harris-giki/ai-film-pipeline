@@ -52,8 +52,8 @@ def validate(scenes: list[dict], chars: dict, locs: dict) -> tuple[list[str], li
         action = s.get("action", "")
         if not action or re.search(r"\b(then|and then|after that)\b", action, re.I):
             errors.append(f"{sid}: one single action (no 'then' sequences)")
-        if s.get("duration", 10) != 10:
-            warns.append(f"{sid}: method uses 10 s clips")
+        if not 4 <= s.get("duration", 10) <= 15:
+            warns.append(f"{sid}: clips should be 4-15 s (10 s for scenes, 4-6 s is enough for montage vignettes)")
         if s.get("aspect", "16:9") != "16:9":
             errors.append(f"{sid}: aspect must be 16:9")
         loc = s.get("location")
@@ -83,6 +83,12 @@ def validate(scenes: list[dict], chars: dict, locs: dict) -> tuple[list[str], li
         if pair and pair == prev_pair:
             errors.append(f"{sid}: neighbouring scenes reuse the same character pair {sorted(pair)}")
         prev_pair = pair
+    for s in scenes:
+        sid = s.get("id", "?")
+        if not s.get("lighting") or len(str(s.get("lighting")).split()) < 4:
+            warns.append(f"{sid}: add a 'lighting' line (motivated sources, direction, colour) - every shot needs its own light")
+        if not s.get("lens"):
+            warns.append(f"{sid}: add a 'lens' framing choice (e.g. '85 mm close-up, shallow focus') from the style's camera_language")
     kinds = Counter(s.get("kind") for s in scenes)
     for k in KINDS:
         if scenes and kinds.get(k, 0) == 0:
@@ -134,9 +140,32 @@ def board_png(proj: Path, scenes: list[dict], out: Path) -> None:
     img.save(out)
 
 
+def pacing_check(proj: Path, scenes: list[dict], chars: dict, locs: dict) -> list[str]:
+    """Coverage targets from the style pack: a top-tier 60 s trailer had ~45 setups, 25 characters,
+    30 locations and a line in about half the shots. SUNSHINE planned 16 setups and felt thin."""
+    from .style import film_cfg, load as load_style
+    st, cfg = load_style(proj), film_cfg(proj)
+    pace, dur = st["pacing"], float(cfg.get("duration_s", 60))
+    out = []
+    want = round(dur / 60 * pace["setups_per_minute"])
+    have = len(scenes)
+    lo, hi = pace["cuts_per_clip"]
+    if have < 0.7 * want:
+        out.append(f"PACING: {have} distinct setups for {dur:.0f} s; {st['id']} needs ~{want} (median shot {pace['median_shot_s']} s, "
+                   f"each setup cut {lo}-{hi} times). Re-using one clip for many cuts looks repetitive: add setups "
+                   "(4-6 s clips are enough for montage vignettes and save credits).")
+    talk = sum(1 for s in scenes if s.get("lines")) / max(have, 1)
+    if talk < pace["dialogue_shot_share"] * 0.6:
+        out.append(f"PACING: only {talk:.0%} of setups have a line; target ~{pace['dialogue_shot_share']:.0%}. Short, characterful one-liners.")
+    if have >= 10 and len(chars) < max(3, have / 4):
+        out.append(f"WORLD: {len(chars)} characters for {have} setups feels empty; add one-shot vignette characters to make the world live.")
+    return out
+
+
 def cmd(proj: Path) -> int:
     scenes, chars, locs = load(proj)
     errors, warns = validate(scenes, chars, locs)
+    warns += pacing_check(proj, scenes, chars, locs)
     for w in warns:
         print("WARN ", w)
     for e in errors:

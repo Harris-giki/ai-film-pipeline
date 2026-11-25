@@ -1,0 +1,93 @@
+{
+  "label": "Anime (2D cel animation)",
+  "summary": "Hand-drawn 2D anime: clean line art, cel shading, painted backgrounds, dramatic framing and limited animation.",
+  "look": "Hand-drawn 2D anime with clean confident line art, flat cel shading with one or two shadow tones, lush painted backgrounds, dramatic lighting with colour gradients in the sky, speed lines and light flares for action. High-quality theatrical anime production values. Never 3D CGI, never photoreal.",
+  "character_medium": "one original 2D anime character with clean line art, cel shading, distinctive hairstyle and silhouette, expressive eyes, model-sheet accuracy",
+  "sheet_backdrop": "Plain white model-sheet background, character in neutral pose, no text.",
+  "plate_medium": "a hand-painted anime background art scene, empty of characters",
+  "vehicle_medium": "a 2D anime-style vehicle drawn with clean line art and cel shading",
+  "motion": "Limited 2D animation mostly on twos (12 drawings per second) with key poses, smears and speed lines in action, hair and cloth moving in held drawings, camera pans over painted backgrounds.",
+  "constraints": "No 3D CGI look, no photorealism, no live-action, no readable text, no logos.",
+  "camera_language": [
+    "dramatic low angle",
+    "extreme close-up on eyes",
+    "wide background-art establishing pan",
+    "dynamic action diagonal",
+    "over-the-shoulder with silhouette",
+    "split-screen style reaction"
+  ],
+  "lighting_menu": [
+    "sunset gradient sky with long shadows",
+    "night city neon glow",
+    "bright summer daylight with cumulus clouds",
+    "rain at night with reflections",
+    "dramatic backlight rim"
+  ],
+  "post": {
+    "frame_step": 12,
+    "pixelate": null,
+    "palette": null,
+    "texture": null
+  },
+  "grade": {
+    "lut": null,
+    "lut_mix": 0.577,
+    "halation": {
+      "knee": 0.85,
+      "sigma": 12,
+      "screen": 0.06,
+      "warm": [
+        1.0,
+        0.6,
+        0.3
+      ]
+    },
+    "eq": {
+      "contrast": 1.03,
+      "saturation": 1.1,
+      "gamma": 1.0
+    },
+    "bloom": {
+      "sigma": 12,
+      "screen": 0.08,
+      "body_ranges": []
+    },
+    "grain": {
+      "w": 1440,
+      "h": 810,
+      "luma": 0.0,
+      "opacity": 0.0
+    }
+  },
+  "target_metrics": {
+    "luma": 0.42,
+    "black_point": 0.04,
+    "white_point": 0.88,
+    "saturation": 0.55,
+    "contrast_std": 0.2
+  },
+  "pacing": {
+    "median_shot_s": 1.3,
+    "setups_per_minute": 34,
+    "cuts_per_clip": [
+      1,
+      3
+    ],
+    "montage_hit_s": [
+      0.25,
+      0.5
+    ],
+    "dialogue_shot_share": 0.5,
+    "title_by_s": 5
+  },
+  "critic": [
+    "line art stays clean and consistent",
+    "shading stays cel-flat, not 3D",
+    "character designs match the model sheet"
+  ],
+  "title": {
+    "colour": "ff4d6d",
+    "font_hint": "bold brush or condensed display"
+  },
+  "id": "anime"
+}

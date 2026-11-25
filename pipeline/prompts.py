@@ -5,14 +5,16 @@ import re
 from pathlib import Path
 
 from .common import load_json, save_json
-from .look import LOOK
+from .style import load as load_style
 from .scenes import load as load_scenes
 
+# LIGHTING was added after studying a top-tier reference trailer: every shot there has its own motivated
+# light (neon, practicals, golden hour, fluorescent), while one blanket LOOK made all of SUNSHINE look alike.
 SECTIONS = ["FORMAT", "REFERENCE ROLES", "THE LOCATION AND WHO IS WHERE", "THE PEOPLE", "FRAMING",
-            "EYE LINE", "MOUTH", "TIMELINE", "CAMERA", "PACE", "PERFORMANCE", "CONTINUITY", "AUDIO",
+            "EYE LINE", "MOUTH", "TIMELINE", "CAMERA", "LIGHTING", "PACE", "PERFORMANCE", "CONTINUITY", "AUDIO",
             "LOOK", "CONSTRAINTS"]
 PREVIZ_SECTIONS = ["FORMAT", "REFERENCE ROLES", "WHAT THE PREVIZ SHOWS", "THE PEOPLE", "MOUTH",
-                   "PERFORMANCE", "AUDIO", "LOOK", "CONSTRAINTS"]
+                   "PERFORMANCE", "LIGHTING", "AUDIO", "LOOK", "CONSTRAINTS"]
 
 NO_CUTS = [
     "One continuous shot from the first frame to the last frame.",
@@ -51,7 +53,8 @@ def skeleton(proj: Path, scene: dict) -> dict:
     has_previz = any(r["tag"] == "@Video1" for r in refs)
     secs = PREVIZ_SECTIONS if has_previz else SECTIONS
     s = {k: "" for k in secs}
-    s["FORMAT"] = f"{scene.get('duration', 10)} seconds, 16:9, 24 fps, photoreal live action."
+    st = load_style(proj)
+    s["FORMAT"] = f"{scene.get('duration', 10)} seconds, 16:9, 24 fps. Style: {st['label']}. {st['motion']}"
     by_who: dict[str, list[str]] = {}
     for r in refs:
         if "who" in r:
@@ -62,8 +65,14 @@ def skeleton(proj: Path, scene: dict) -> dict:
         roles.append("The grey figures in @Video1 are layout only; every person is fully dressed in the listed outfit.")
     s["REFERENCE ROLES"] = " ".join(roles)
     s["AUDIO"] = AUDIO_DEFAULT
-    s["LOOK"] = LOOK
-    s["CONSTRAINTS"] = " ".join(NO_CUTS) + " Each action happens once. No readable text, no logos."
+    s["LOOK"] = st["look"]
+    s["CONSTRAINTS"] = " ".join(NO_CUTS) + " Each action happens once. " + st["constraints"]
+    if "LIGHTING" in s:
+        s["LIGHTING"] = scene.get("lighting", "")
+    if "CAMERA" in s and scene.get("camera"):
+        s["CAMERA"] = scene["camera"]
+    if "FRAMING" in s and scene.get("lens"):
+        s["FRAMING"] = scene["lens"]
     if "TIMELINE" in s:
         s["TIMELINE"] = " ".join(f"{t} s:" for t in range(0, int(scene.get("duration", 10)) + 1, 2))
     if scene.get("lines"):
@@ -83,7 +92,8 @@ def render(p: dict) -> str:
     return "\n\n".join(out) + "\n"
 
 
-def lint(p: dict, text: str, chars: list[str]) -> list[str]:
+def lint(p: dict, text: str, chars: list[str], st: dict | None = None) -> list[str]:
+    st = st or load_style(None)
     errs = []
     order = PREVIZ_SECTIONS if p["previz"] else SECTIONS
     if list(p["sections"].keys()) != order:
@@ -96,8 +106,12 @@ def lint(p: dict, text: str, chars: list[str]) -> list[str]:
     for line in NO_CUTS:
         if line not in text:
             errs.append(f"missing no-cuts line: {line}")
-    if LOOK not in text:
-        errs.append("LOOK block missing or paraphrased")
+    if st["look"] not in text:
+        errs.append(f"{st['id']} LOOK block missing or paraphrased")
+    if st["constraints"] not in text:
+        errs.append(f"{st['id']} style constraints missing from CONSTRAINTS")
+    if "LIGHTING" in p["sections"] and len(p["sections"]["LIGHTING"].split()) < 6:
+        errs.append("LIGHTING must name the motivated light sources, direction and colour for this shot")
     tags = {r["tag"] for r in p["references"]}
     used = set(re.findall(r"@(?:Image\d+|Video\d+)", text))
     for t in used - tags:
@@ -132,7 +146,7 @@ def cmd(proj: Path, sid: str, build: bool, lint_only: bool) -> int:
         return 0
     p = load_json(pj)
     text = render(p)
-    errs = lint(p, text, scene.get("cast", []))
+    errs = lint(p, text, scene.get("cast", []), load_style(proj))
     hard = [e for e in errs if not e.startswith("WARN")]
     for e in errs:
         print(("WARN " if e.startswith("WARN") else "LINT ") + e.removeprefix("WARN: "))

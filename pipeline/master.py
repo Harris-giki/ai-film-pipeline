@@ -5,8 +5,9 @@ import shutil
 from pathlib import Path
 
 from .board import board_path, length
-from .common import ROOT, ffmpeg, load_json
-from .finish import grade_cfg, grade_chain, grain_chain, title_overlays, titles_chain
+from .common import H, ROOT, W, ffmpeg, load_json
+from .finish import grade_cfg, grade_chain, grain_chain, style_post_chain, title_overlays, titles_chain
+from .style import load as load_style
 
 
 def master(proj: Path, cut: Path | None = None, burn_subs: bool = True) -> Path:
@@ -23,11 +24,21 @@ def master(proj: Path, cut: Path | None = None, burn_subs: bool = True) -> Path:
     if mixf.exists():
         inputs += ["-i", mixf]
         audio_map = "1:a"
+    post = load_style(proj)["post"]
+    palette_idx = None
+    if post.get("palette"):   # pixel styles: build a limited palette from the cut first (pass 1)
+        pal = proj / "12_master" / "palette.png"
+        pal.parent.mkdir(parents=True, exist_ok=True)
+        pw, ph = post.get("pixelate") or [W, H]
+        ffmpeg("-i", cut, "-vf", f"fps=2,scale={pw}:{ph}:flags=area,palettegen=max_colors={post['palette']}:stats_mode=full", pal)
+        palette_idx = len(inputs) // 2
+        inputs += ["-i", pal]
     first_ov = len(inputs) // 2
     for o in overlays:
         inputs += ["-i", o["file"]]
     g = grade_chain(cfg, "0:v", "graded")                       # 1. grade
-    g += titles_chain(overlays, first_ov, "graded", "titled")   # 2. titles: after grade, before grain
+    g += style_post_chain(post, "graded", "styled", total, palette_idx)   # 1b. style post (stepping, pixels, paper)
+    g += titles_chain(overlays, first_ov, "styled", "titled")   # 2. titles: after grade, before grain
     g += grain_chain(cfg, "titled", "grained", total)           # 3. grain last (of the picture look)
     ass = proj / "10_finish" / "subs" / "subs.ass"
     tail = "[grained]"

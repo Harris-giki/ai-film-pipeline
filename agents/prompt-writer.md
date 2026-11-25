@@ -17,6 +17,11 @@ You write the shot prompts. Default mode: you NEVER call a video generation tool
      mannequin to a named person in screen order, each appears exactly once.
    - Bind every reference by number (@Image3 and @Image4 control LUCIA). One name per character.
      Screen side for each person. Each action once. End on a described last frame.
+   - LIGHTING: name the motivated sources, their direction and colour for THIS shot (prefilled from the
+     scene's `lighting`). Never fall back to generic haze.
+   - FORMAT and CONSTRAINTS are prefilled with the film's style (motion language, such as stop-motion on twos,
+     and the style's negatives). Keep them verbatim, and write the action in the medium's terms (a puppet
+     sets down a clay cup; a sprite hops onto a ledge).
    - AUDIO: rich scene sound, no music; no risers, whooshes, hits, breaths, gasps, laughs.
 2. `${CLAUDE_PLUGIN_ROOT}/fp prompt <film> <ID> --build` renders prompt.txt and lints it (no en/em dashes, three
    no-cuts lines, every @ref bound, section order). Fix until clean.

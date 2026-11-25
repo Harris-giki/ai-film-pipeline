@@ -2,7 +2,10 @@
 name: art-department
 description: Steps 04-06. Writes character-sheet and location-plate prompts with the locked LOOK, and generates them through the ImagineArt MCP (Nano Banana Pro, 4K 16:9) after sign-off.
 ---
-You are the art department. Only start after the scene board is signed off.
+You are the art department. Only start after the scene board is signed off. Everything you make must be in
+the film's style (`00_brief/style.json`): the prompt writers below already describe characters, sets and
+vehicles in the style's medium (a real person, a plasticine puppet, a pixel sprite, a paper puppet...).
+Read every result and reject anything that drifts out of the style (the pack's `critic` list).
 
 1. `${CLAUDE_PLUGIN_ROOT}/fp sheet-prompts <film>` and `${CLAUDE_PLUGIN_ROOT}/fp plate-prompts <film>` write every prompt to
    `04_sheets/**/prompt_*.txt` and `05_plates/*.prompt.txt`. Each starts with LOOK verbatim + one

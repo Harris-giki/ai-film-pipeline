@@ -1,0 +1,94 @@
+{
+  "label": "Claymation (stop-motion plasticine)",
+  "summary": "Handmade plasticine puppets on miniature sets, shot stop-motion on twos with fingerprints, tool marks and practical miniature lights.",
+  "look": "Handcrafted stop-motion claymation. Every character and prop is sculpted from matte plasticine with visible fingerprints, tool marks and slight seams; sets are tabletop miniatures of painted foam, card and fabric. Shot with a macro lens: shallow depth of field, miniature scale, warm practical miniature lights and small soft shadows. Rich saturated handmade colour. Never smooth CGI, never photoreal people.",
+  "character_medium": "one original claymation puppet character sculpted from matte plasticine with visible fingerprints and tool marks, glass-bead eyes, slightly exaggerated proportions, built on a wire armature",
+  "sheet_backdrop": "Plain painted card backdrop on a tabletop, soft studio light, puppet standing on a small base.",
+  "plate_medium": "a miniature handmade claymation set at tabletop scale, sculpted plasticine and painted foam, empty of puppets",
+  "vehicle_medium": "a handmade plasticine miniature vehicle",
+  "motion": "Stop-motion animation on twos: 12 distinct poses per second, so every movement steps slightly; no motion blur; puppets keep their fingerprints and shapes; tiny frame-to-frame boil of the clay surface.",
+  "constraints": "No smooth CGI surfaces, no photoreal humans, no motion blur, no fluid 24 fps motion, no readable text, no logos.",
+  "camera_language": [
+    "macro close-up",
+    "miniature wide on a tabletop set",
+    "slow motion-control push-in",
+    "low puppet-eye-level angle",
+    "overhead tabletop view",
+    "static locked-off medium"
+  ],
+  "lighting_menu": [
+    "warm miniature practical lamps",
+    "window light through a tiny card window",
+    "moonlight blue key with warm practicals",
+    "spotlit stage-like key",
+    "candlelight glow"
+  ],
+  "post": {
+    "frame_step": 12,
+    "pixelate": null,
+    "palette": null,
+    "texture": null
+  },
+  "grade": {
+    "lut": null,
+    "lut_mix": 0.577,
+    "halation": {
+      "knee": 0.85,
+      "sigma": 14,
+      "screen": 0.08,
+      "warm": [
+        1.0,
+        0.5,
+        0.2
+      ]
+    },
+    "eq": {
+      "contrast": 1.05,
+      "saturation": 1.12,
+      "gamma": 0.97
+    },
+    "bloom": {
+      "sigma": 10,
+      "screen": 0.06,
+      "body_ranges": []
+    },
+    "grain": {
+      "w": 1440,
+      "h": 810,
+      "luma": 4.0,
+      "opacity": 1.0
+    }
+  },
+  "target_metrics": {
+    "luma": 0.38,
+    "black_point": 0.05,
+    "white_point": 0.8,
+    "saturation": 0.5,
+    "contrast_std": 0.19
+  },
+  "pacing": {
+    "median_shot_s": 1.8,
+    "setups_per_minute": 28,
+    "cuts_per_clip": [
+      1,
+      2
+    ],
+    "montage_hit_s": [
+      0.33,
+      0.67
+    ],
+    "dialogue_shot_share": 0.4,
+    "title_by_s": 6
+  },
+  "critic": [
+    "characters still look like plasticine (fingerprints, matte)",
+    "motion steps on twos, no smooth CG motion",
+    "sets read as miniature (shallow focus, tabletop scale)",
+    "no photoreal humans slipped in"
+  ],
+  "title": {
+    "colour": "ffb347",
+    "font_hint": "chunky rounded, looks hand-sculpted"
+  },
+  "id": "claymation"
+}

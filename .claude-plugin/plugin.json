@@ -1,10 +1,26 @@
 {
   "name": "ai-film-pipeline",
-  "version": "1.0.0",
-  "description": "Agentic generative-AI film pipeline: Claude directs a team of agents through 24 steps (brief, scene design, character sheets, plates, Blender previz, Seedance prompts, dailies, beat-locked edit, web editor, grade, titles, subtitles, mix, master) using the ImagineArt connector.",
-  "author": { "name": "Harris-giki" },
+  "version": "1.1.0",
+  "description": "Agentic generative-AI film pipeline in any visual style (realistic, claymation, pixel art, paper cutout, stylized 3D, anime, custom): Claude directs a team of agents through 24 steps from brief to verified master, using the ImagineArt connector.",
+  "author": {
+    "name": "Harris-giki"
+  },
   "homepage": "https://github.com/Harris-giki/ai-film-pipeline",
   "repository": "https://github.com/Harris-giki/ai-film-pipeline",
   "license": "MIT",
-  "keywords": ["film", "video", "generative-ai", "imagineart", "seedance", "blender", "trailer", "editing"]
+  "keywords": [
+    "animation",
+    "anime",
+    "blender",
+    "claymation",
+    "editing",
+    "film",
+    "generative-ai",
+    "imagineart",
+    "pixel-art",
+    "seedance",
+    "stop-motion",
+    "trailer",
+    "video"
+  ]
 }

@@ -9,26 +9,20 @@ from .board import a_span, board_path, length
 from .common import FPS, H, W, clip_path, ffmpeg, load_json, save_json, tc
 
 # ------------------------------------------------------------------ step 18: grade
-GRADE_DEFAULT = {
-    "lut": None,               # path to a .cube; blended at lut_mix
-    "lut_mix": 0.577,
-    "halation": {"knee": 0.72, "sigma": 29, "screen": 0.35, "warm": [1.0, 0.45, 0.15]},
-    "eq": {"contrast": 0.98, "saturation": 1.07},
-    "bloom": {"sigma": 14, "screen": 0.17, "body_ranges": []},   # [[start,end],...] timeline seconds
-    "grain": {"w": 1440, "h": 810, "luma": 13.8, "opacity": 1.0},
-}
-
-
+# Grade defaults now come from the film's style pack (styles/*.json). The old single default (35% halation,
+# heavy grain, contrast < 1) lifted the blacks and washed SUNSHINE out; the realistic pack is retuned toward
+# a measured top-tier reference (deep blacks, ~0.5 saturation).
 def grade_cfg(proj: Path) -> dict:
+    from .style import load as load_style
+    base = load_style(proj)["grade"]
     p = proj / "10_finish" / "grade.json"
     if not p.exists():
-        save_json(p, GRADE_DEFAULT)
-    cfg = {**GRADE_DEFAULT, **load_json(p)}
-    return cfg
+        save_json(p, base)
+    return {**base, **load_json(p)}
 
 
 def grade_chain(cfg: dict, src: str, dst: str) -> list[str]:
-    """Filtergraph lines: [src] -> graded (before titles/grain) -> [dst]."""
+    """Filtergraph lines: [src] -> graded (before titles/grain) -> [dst]. Zero-strength stages are skipped."""
     g, out = [], src
     g.append(f"[{out}]format=gbrp16le[g_in]"); out = "g_in"
     if cfg.get("lut"):
@@ -36,15 +30,19 @@ def grade_chain(cfg: dict, src: str, dst: str) -> list[str]:
         g.append(f"[l1]lut3d=file='{cfg['lut']}':interp=tetrahedral[l2]")
         g.append(f"[l0][l2]blend=all_mode=normal:all_opacity={cfg['lut_mix']}[g_lut]"); out = "g_lut"
     h = cfg["halation"]
-    r, gg, b = h["warm"]
-    g.append(f"[{out}]split[h0][h1]")
-    g.append(f"[h1]curves=all='0/0 {h['knee']}/0 1/1',gblur=sigma={h['sigma']},"
-             f"colorchannelmixer=rr={r}:gg={gg}:bb={b}[h2]")
-    g.append(f"[h0][h2]blend=all_mode=screen:all_opacity={h['screen']}[g_hal]"); out = "g_hal"
+    if h.get("screen", 0) > 0:
+        r, gg, b = h["warm"]
+        g.append(f"[{out}]split[h0][h1]")
+        g.append(f"[h1]curves=all='0/0 {h['knee']}/0 1/1',gblur=sigma={h['sigma']},"
+                 f"colorchannelmixer=rr={r}:gg={gg}:bb={b}[h2]")
+        g.append(f"[h0][h2]blend=all_mode=screen:all_opacity={h['screen']}[g_hal]"); out = "g_hal"
     e = cfg["eq"]
-    g.append(f"[{out}]eq=contrast={e['contrast']}:saturation={e['saturation']}[g_eq]"); out = "g_eq"
+    g.append(f"[{out}]eq=contrast={e['contrast']}:saturation={e['saturation']}:gamma={e.get('gamma', 1.0)}[g_eq]"); out = "g_eq"
+    if cfg.get("black_point"):  # crush lifted blacks: map input black_point -> 0
+        bp = cfg["black_point"]
+        g.append(f"[{out}]curves=all='0/0 {bp}/0 1/1'[g_bp]"); out = "g_bp"
     bl = cfg["bloom"]
-    if bl.get("body_ranges"):
+    if bl.get("body_ranges") and bl.get("screen", 0) > 0:
         en = "+".join(f"between(t,{a},{z})" for a, z in bl["body_ranges"])
         g.append(f"[{out}]split[b0][b1]")
         g.append(f"[b1]gblur=sigma={bl['sigma']}[b2]")
@@ -55,11 +53,32 @@ def grade_chain(cfg: dict, src: str, dst: str) -> list[str]:
 
 def grain_chain(cfg: dict, src: str, dst: str, dur: float) -> list[str]:
     gr = cfg["grain"]
+    if not gr.get("luma") or not gr.get("opacity"):
+        return [f"[{src}]null[{dst}]"]
     return [
         f"color=c=0x808080:s={gr['w']}x{gr['h']}:r={FPS}:d={dur:.3f},format=yuv444p,"
         f"noise=c0s={gr['luma']}:c0f=t+u,scale={W}:{H}:flags=bicubic,format=gbrp16le[grain]",
         f"[{src}][grain]blend=all_mode=grainmerge:all_opacity={gr['opacity']}:shortest=1[{dst}]",
     ]
+
+
+def style_post_chain(post: dict, src: str, dst: str, dur: float, palette_input: int | None = None) -> list[str]:
+    """Style-defining post: stop-motion frame stepping, pixelation, limited palette, paper texture."""
+    g, cur = [], src
+    if post.get("frame_step"):   # hold each pose for 24/frame_step frames (12 = "on twos")
+        g.append(f"[{cur}]fps={post['frame_step']},fps={FPS}[ps_step]"); cur = "ps_step"
+    if post.get("pixelate"):
+        pw, ph = post["pixelate"]
+        g.append(f"[{cur}]scale={pw}:{ph}:flags=area,scale={W}:{H}:flags=neighbor[ps_px]"); cur = "ps_px"
+    if post.get("palette") and palette_input is not None:
+        g.append(f"[{cur}]format=rgb24[ps_rgb]")
+        g.append(f"[ps_rgb][{palette_input}:v]paletteuse=dither=bayer:bayer_scale=3[ps_pal]"); cur = "ps_pal"
+    if post.get("texture") == "paper":
+        g.append(f"color=c=0xf4eee0:s={W}x{H}:r={FPS}:d={dur:.3f},noise=alls=18:allf=0,gblur=sigma=1.1,format=gbrp16le[ps_tex]")
+        g.append(f"[{cur}]format=gbrp16le[ps_in]")
+        g.append(f"[ps_in][ps_tex]blend=all_mode=multiply:all_opacity=0.22:shortest=1[ps_paper]"); cur = "ps_paper"
+    g.append(f"[{cur}]format=gbrp16le[{dst}]")
+    return g
 
 
 def grade_preview(proj: Path, clip: str, at: float = 2.0) -> int:

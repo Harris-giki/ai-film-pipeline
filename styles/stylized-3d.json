@@ -1,0 +1,93 @@
+{
+  "label": "Stylized 3D animation (feature-animation CG)",
+  "summary": "Polished feature-animation CG: appealing exaggerated characters, soft global illumination, expressive acting, smooth 24 fps motion.",
+  "look": "Polished stylized 3D feature-animation look. Appealing characters with exaggerated proportions, soft subsurface skin, sculpted hair and expressive faces; richly detailed stylized environments; soft global illumination, bounce light, gentle rim light and saturated cinematic colour. Clean, high-end render quality. Never photoreal humans, never flat 2D.",
+  "character_medium": "one original stylized 3D animated character with appealing exaggerated proportions, soft subsurface skin, sculpted stylized hair, large expressive eyes, feature-animation quality",
+  "sheet_backdrop": "Neutral grey studio cyclorama, soft three-point light, character in a relaxed A-pose.",
+  "plate_medium": "a stylized 3D animated film environment, richly detailed, empty of characters",
+  "vehicle_medium": "a stylized 3D animated vehicle with exaggerated proportions",
+  "motion": "Smooth 24 fps feature-animation acting with squash and stretch, clear anticipation and follow-through, appealing arcs, expressive faces; camera moves like a virtual cinema camera.",
+  "constraints": "No photoreal humans, no live-action footage, no 2D flat drawing, no readable text, no logos.",
+  "camera_language": [
+    "wide establishing crane",
+    "medium two-shot",
+    "close-up on expressive face",
+    "low heroic angle",
+    "sweeping virtual camera move",
+    "over-the-shoulder"
+  ],
+  "lighting_menu": [
+    "warm golden hour with soft bounce",
+    "cool moonlight with warm windows",
+    "bright saturated daylight",
+    "magical glow from a prop",
+    "neon night city"
+  ],
+  "post": {
+    "frame_step": null,
+    "pixelate": null,
+    "palette": null,
+    "texture": null
+  },
+  "grade": {
+    "lut": null,
+    "lut_mix": 0.577,
+    "halation": {
+      "knee": 0.85,
+      "sigma": 16,
+      "screen": 0.08,
+      "warm": [
+        1.0,
+        0.55,
+        0.25
+      ]
+    },
+    "eq": {
+      "contrast": 1.04,
+      "saturation": 1.12,
+      "gamma": 0.98
+    },
+    "bloom": {
+      "sigma": 14,
+      "screen": 0.1,
+      "body_ranges": []
+    },
+    "grain": {
+      "w": 1440,
+      "h": 810,
+      "luma": 0.0,
+      "opacity": 0.0
+    }
+  },
+  "target_metrics": {
+    "luma": 0.4,
+    "black_point": 0.04,
+    "white_point": 0.82,
+    "saturation": 0.52,
+    "contrast_std": 0.19
+  },
+  "pacing": {
+    "median_shot_s": 1.6,
+    "setups_per_minute": 30,
+    "cuts_per_clip": [
+      1,
+      3
+    ],
+    "montage_hit_s": [
+      0.3,
+      0.6
+    ],
+    "dialogue_shot_share": 0.5,
+    "title_by_s": 6
+  },
+  "critic": [
+    "characters keep their stylized design (no drift toward photoreal)",
+    "acting is expressive with clear poses",
+    "render looks clean, not noisy"
+  ],
+  "title": {
+    "colour": "ffd166",
+    "font_hint": "bold playful display"
+  },
+  "id": "stylized-3d"
+}

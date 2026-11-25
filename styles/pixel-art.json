@@ -1,0 +1,97 @@
+{
+  "label": "Pixel art (16-bit retro game)",
+  "summary": "Crisp 16-bit pixel art with a limited palette, side-scrolling and top-down game framings, stepped animation and dithered light.",
+  "look": "Crisp 16-bit pixel art like a polished retro console game. Every element is drawn with hard-edged square pixels on a low-resolution grid, a limited 32-colour palette, ordered dithering for gradients and lighting, no anti-aliasing, no blur, no photographic texture. Clear readable silhouettes, parallax background layers, bold saturated colours.",
+  "character_medium": "one original pixel-art character drawn as a crisp 16-bit sprite with a limited 32-colour palette, clear silhouette, no anti-aliasing, game-hero proportions",
+  "sheet_backdrop": "Flat solid dark background, sprites evenly spaced, no text.",
+  "plate_medium": "a 16-bit pixel-art game background scene with parallax layers, empty of characters",
+  "vehicle_medium": "a 16-bit pixel-art vehicle sprite",
+  "motion": "Stepped sprite animation at about 12 frames per second, like a retro game: walk cycles, snappy poses, hard cuts between poses, parallax scrolling backgrounds, no motion blur, no smooth interpolation, the pixel grid never warps.",
+  "constraints": "No photorealism, no smooth gradients, no anti-aliasing, no blur, no 3D rendering, no readable text, no logos.",
+  "camera_language": [
+    "side-scrolling platformer view",
+    "top-down RPG view",
+    "isometric diorama view",
+    "close-up dialogue portrait framing",
+    "parallax wide establishing",
+    "static title-screen composition"
+  ],
+  "lighting_menu": [
+    "dithered sunset gradient",
+    "night palette with glowing windows",
+    "neon arcade glow",
+    "dungeon torchlight",
+    "daylight with flat sky"
+  ],
+  "post": {
+    "frame_step": 12,
+    "pixelate": [
+      480,
+      270
+    ],
+    "palette": 48,
+    "texture": null
+  },
+  "grade": {
+    "lut": null,
+    "lut_mix": 0.577,
+    "halation": {
+      "knee": 1.0,
+      "sigma": 1,
+      "screen": 0.0,
+      "warm": [
+        1,
+        1,
+        1
+      ]
+    },
+    "eq": {
+      "contrast": 1.05,
+      "saturation": 1.15,
+      "gamma": 1.0
+    },
+    "bloom": {
+      "sigma": 1,
+      "screen": 0.0,
+      "body_ranges": []
+    },
+    "grain": {
+      "w": 1440,
+      "h": 810,
+      "luma": 0.0,
+      "opacity": 0.0
+    }
+  },
+  "target_metrics": {
+    "luma": 0.38,
+    "black_point": 0.04,
+    "white_point": 0.85,
+    "saturation": 0.6,
+    "contrast_std": 0.22
+  },
+  "pacing": {
+    "median_shot_s": 1.5,
+    "setups_per_minute": 30,
+    "cuts_per_clip": [
+      1,
+      2
+    ],
+    "montage_hit_s": [
+      0.25,
+      0.5
+    ],
+    "dialogue_shot_share": 0.4,
+    "title_by_s": 5
+  },
+  "critic": [
+    "pixels stay square and crisp (no smearing or soft edges)",
+    "palette stays limited, no photographic gradients",
+    "characters keep their sprite design",
+    "motion is stepped, not smooth"
+  ],
+  "title": {
+    "colour": "ffe14d",
+    "font_hint": "bitmap pixel font"
+  },
+  "id": "pixel-art"
+}

@@ -8,7 +8,10 @@ tools: Bash, Read, Write, Edit, Glob, AskUserQuestion
    librosa often finds no beats in a quiet intro: locate each drop by the biggest RMS energy rise, phase-align
    the tempo grid to it, and extend the grid back through the intro. Instrumental songs have no lyrics: cut
    the cold open into the first drop and end on the song's final hit.
-2. Map sections to song form: cold open, title, set-up verse, chorus of one-liners, beat-locked montage
+2. Density targets come from the style pack's `pacing` (median shot, montage hit length, title time). A top-tier
+   realistic trailer cuts about every second, puts the title over an establishing shot by ~5 s, and runs its
+   montage at 0.2-0.5 s per hit. Use 1-3 cuts per setup and prefer a new setup over re-using one.
+   Map sections to song form: cold open, title, set-up verse, chorus of one-liners, beat-locked montage
    on the drop (0.25-0.5 s hits, action scenes open it), quiet verse for the emotional pair, outro.
    Intercut by splitting a clip and inserting another. J/L cuts only where motivated.
 3. `${CLAUDE_PLUGIN_ROOT}/fp board-init <film>` turns selects + section plan into `09_edit/board.json`, or write the

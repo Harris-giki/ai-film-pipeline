@@ -1,0 +1,91 @@
+{
+  "label": "Paper cutout (layered cardstock animation)",
+  "summary": "Layered paper and cardstock puppets with visible cut edges and split-pin joints, moved on twos over textured paper sets.",
+  "look": "Paper cutout animation. Characters and sets are cut from layered coloured cardstock and textured paper with visible cut edges, slight fibres, split-pin joints and small real drop shadows between layers. Flat layered depth like a diorama, soft even top light, warm crafted colour palette. Never 3D-rendered, never photoreal.",
+  "character_medium": "one original paper cutout puppet character assembled from layered coloured cardstock with visible cut edges, split-pin joints at the shoulders, elbows and knees, simple graphic face, subtle drop shadows between layers",
+  "sheet_backdrop": "Plain textured paper backdrop, flat even light, puppet laid out flat.",
+  "plate_medium": "a layered paper-cutout diorama set made of textured cardstock layers, empty of characters",
+  "vehicle_medium": "a layered paper-cutout vehicle with split-pin wheels",
+  "motion": "Cutout animation on twos: 12 poses per second, limbs rotate around split pins, flat layers slide past each other, no motion blur, no 3D rotation of flat parts.",
+  "constraints": "No 3D rendering, no photoreal people, no smooth gradients, no motion blur, no readable text, no logos.",
+  "camera_language": [
+    "flat frontal tableau",
+    "multiplane push-in through paper layers",
+    "side-on profile staging",
+    "overhead flat-lay view",
+    "close-up on a paper face"
+  ],
+  "lighting_menu": [
+    "soft even top light",
+    "warm lamp light with paper shadows",
+    "coloured gel backlight through paper",
+    "night scene in blue paper with cut-out stars"
+  ],
+  "post": {
+    "frame_step": 12,
+    "pixelate": null,
+    "palette": null,
+    "texture": "paper"
+  },
+  "grade": {
+    "lut": null,
+    "lut_mix": 0.577,
+    "halation": {
+      "knee": 1.0,
+      "sigma": 1,
+      "screen": 0.0,
+      "warm": [
+        1,
+        1,
+        1
+      ]
+    },
+    "eq": {
+      "contrast": 1.02,
+      "saturation": 1.08,
+      "gamma": 1.0
+    },
+    "bloom": {
+      "sigma": 1,
+      "screen": 0.0,
+      "body_ranges": []
+    },
+    "grain": {
+      "w": 1440,
+      "h": 810,
+      "luma": 3.0,
+      "opacity": 1.0
+    }
+  },
+  "target_metrics": {
+    "luma": 0.45,
+    "black_point": 0.06,
+    "white_point": 0.85,
+    "saturation": 0.45,
+    "contrast_std": 0.18
+  },
+  "pacing": {
+    "median_shot_s": 1.8,
+    "setups_per_minute": 26,
+    "cuts_per_clip": [
+      1,
+      2
+    ],
+    "montage_hit_s": [
+      0.33,
+      0.67
+    ],
+    "dialogue_shot_share": 0.4,
+    "title_by_s": 6
+  },
+  "critic": [
+    "everything still reads as paper (cut edges, layers, split pins)",
+    "no 3D rotation of flat parts",
+    "motion steps on twos"
+  ],
+  "title": {
+    "colour": "ff5a36",
+    "font_hint": "cut-paper letters"
+  },
+  "id": "paper-cutout"
+}

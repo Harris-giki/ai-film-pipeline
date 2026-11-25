@@ -17,12 +17,16 @@ def cmd_new(a):
     if not brief.exists():
         brief.write_text(f"# {a.film} — brief\n\nGOAL: \n\nSTACK: Claude Code (director + editor), ImagineArt MCP "
                          "(Nano Banana Pro stills 4K 16:9, Seedance 2.5 reference-to-video), Blender 5 previz.\n\n"
-                         "STANDING RULES: see CLAUDE.md (copied verbatim by /film-new)\n")
+                         "STANDING RULES: see the ai-film-pipeline skill (copied verbatim by /film-new)\n")
     for name, default in (("scenes.json", "[]"), ("characters.json", "{}"), ("locations.json", "{}")):
         f = p / "03_scenes" / name
         if not f.exists():
             f.write_text(default + "\n")
     print(f"created {p}")
+    if getattr(a, "style", None):
+        from .style import set_style
+        return set_style(p, a.style, a.duration)
+    print("next: choose a visual style -> fp styles, then fp style <film> <style-id> --duration <seconds>")
     return 0
 
 
@@ -64,7 +68,14 @@ def main(argv=None):
         s.set_defaults(fn=fn)
         return s
 
-    add("new", cmd_new, help="01 create project folders")
+    add("new", cmd_new, (["--style"], {"help": "style pack id (fp styles)"}), (["--duration"], {"type": float, "help": "film length in seconds"}),
+        help="01 create project folders (+ optional style)")
+    add("style", lambda a: __import__("pipeline.style", fromlist=["x"]).set_style(project(a.film), a.style_id, a.duration, a.custom),
+        (["style_id"], {"nargs": "?", "default": "custom"}), (["--duration"], {"type": float}), (["--custom"], {"help": "path to a custom style json"}),
+        help="choose the film's visual style (freezes the pack into the film)")
+    add("lookmatch", lambda a: __import__("pipeline.lookstats", fromlist=["x"]).cmd(project(a.film), a.video, a.ref, a.apply),
+        (["video"], {"nargs": "?"}), (["--ref"], {"help": "match a reference film instead of the style targets"}), (["--apply"], {"action": "store_true"}),
+        help="18 measure the look vs style targets or a reference, suggest/apply grade")
     add("status", cmd_status, help="where the film is in the 24 steps")
     add("refs", lambda a: (__import__("pipeline.refs", fromlist=["x"]).study(project(a.film)), 0)[1], help="02 tile + measure refs")
     add("scenes", lambda a: __import__("pipeline.scenes", fromlist=["x"]).cmd(project(a.film)), help="03 validate, table, board")
@@ -110,10 +121,20 @@ def main(argv=None):
         (["scenes"], {"nargs": "+"}), help="11 lint + print Seedance prompt and reference URLs per shot")
     dm = sp.add_parser("demo", help="build a synthetic demo film (no credits) to try every stage")
     dm.set_defaults(fn=lambda a: __import__("runpy").run_path(str(ROOT / "tools" / "make_demo.py"), run_name="__main__") and 0)
-    lk = sp.add_parser("look", help="04 print LOOK or --check files")
+    sty = sp.add_parser("styles", help="list visual style packs")
+    sty.set_defaults(fn=lambda a: __import__("pipeline.style", fromlist=["x"]).list_cmd())
+    lk = sp.add_parser("look", help="04 print the film's LOOK block or --check files")
+    lk.add_argument("--film")
     lk.add_argument("--check", nargs="*")
-    lk.set_defaults(fn=lambda a: (0 if all([__import__("pipeline.look", fromlist=["x"]).check_file(Path(f)) for f in a.check]) else 1)
-                    if a.check else (print(__import__("pipeline.look", fromlist=["x"]).LOOK), 0)[1])
+    def _look(a):
+        from .look import check_file
+        from .style import load as load_style
+        lk_text = load_style(project(a.film) if a.film else None)["look"]
+        if a.check:
+            return 0 if all([check_file(Path(f), lk_text) for f in a.check]) else 1
+        print(lk_text)
+        return 0
+    lk.set_defaults(fn=_look)
     a = ap.parse_args(argv)
     sys.exit(a.fn(a) or 0)
 

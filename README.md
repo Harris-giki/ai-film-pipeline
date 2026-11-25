@@ -1,6 +1,7 @@
 # AI Film Pipeline for Claude Code
 
-Make generative-AI short films, trailers and ads end to end inside Claude Code.
+Make generative-AI short films, trailers and ads end to end inside Claude Code, in the visual style you
+choose: **realistic cinematic, claymation, pixel art, paper cutout, stylized 3D, anime**, or your own.
 
 Claude acts as the **director** and runs a crew of 11 specialist agents through a 24-step production
 pipeline. Each agent hands its work to the next, a critic agent reviews every hand-off, and you sign off at
@@ -16,7 +17,32 @@ brief -> research -> scene board [you sign off] -> character sheets + location p
       -> grade -> titles -> subtitles -> 3-layer sound -> one-pass master -> machine verification
 ```
 
-It was built and proven by making **SUNSHINE**, a 60-second original game-trailer-style short: 16 shots, 3
+## Styles
+
+| Style | What it looks like | How it moves |
+|---|---|---|
+| Realistic cinematic | live-action trailer: real people, motivated light, deep blacks | real-time 24 fps |
+| Claymation | plasticine puppets with fingerprints on miniature sets | stop-motion on twos |
+| Pixel art | crisp 16-bit sprites, limited dithered palette | stepped sprite animation |
+| Paper cutout | layered cardstock puppets, split-pin joints, paper texture | on twos |
+| Stylized 3D | feature-animation CG, appealing exaggerated characters | smooth, squash and stretch |
+| Anime | clean line art, cel shading, painted backgrounds | limited animation on twos |
+
+The style is the first question Claude asks. It then shapes everything: how characters and sets are drawn,
+how clips move, the lighting and lens menus, the pacing targets, the grade, the finishing effects (pixel grid
+and palette, stop-motion frame holds, paper texture) and what the critic rejects. Custom styles start from
+`styles/_template.json`. Details are in [docs/STYLES.md](docs/STYLES.md).
+
+## Built-in quality bar
+We measured a top-tier AI trailer frame by frame ([docs/REFERENCE_LESSONS.md](docs/REFERENCE_LESSONS.md)):
+~45 setups in 66 s, a cut every second, ~25 characters, motivated light in every shot, deep blacks. The
+pipeline now enforces this:
+- The scene planner warns when a film is too thin.
+- Every shot carries its own lighting and lens.
+- `fp lookmatch` measures your film's look and fits the grade to the style's targets (or to any reference
+  film) in a closed loop.
+
+It was first proven by making **SUNSHINE**, a 60-second original game-trailer-style short: 16 shots, 3
 characters, a generated score, a beat-locked montage, -14 LUFS, and every line verified in the final mix.
 
 ---
@@ -58,13 +84,13 @@ Open Claude Code in any folder where you want your films to live, and just ask:
 
 > Make me a 30-second trailer for an original heist comedy set in a sunny coastal city.
 
-Claude loads the `ai-film-pipeline` skill, checks the setup, writes the brief and asks a few questions (tone,
-length, song, **who generates the clips: you or Claude**). Then it walks the phases. Each phase also has a
+Claude loads the `ai-film-pipeline` skill, checks the setup, and asks a few questions: **which visual style**,
+length, tone, song, and **who generates the clips (you or Claude)**. Then it writes the brief. Then it walks the phases. Each phase also has a
 slash command:
 
 | Command | Steps |
 |---|---|
-| `/ai-film-pipeline:film-new <film> <idea>` | 01 brief |
+| `/ai-film-pipeline:film-new <film> <idea>` | 01 style + brief |
 | `/ai-film-pipeline:film-research <film>` | 02 study reference trailers (put them in `films/<film>/01_refs/`) |
 | `/ai-film-pipeline:film-scenes <film>` | 03 scene board, your sign-off |
 | `/ai-film-pipeline:film-art <film>` | 04-06 look, character sheets, plates |
@@ -104,7 +130,8 @@ pipeline/            the Python toolchain behind `fp` (scenes, prompts, assets, 
                      render, grade, titles, subtitles, mix, master, verify)
 editor/              local web editor (Python server with range requests, single-page timeline UI)
 blender/             previz.py (shot.json -> grey Workbench previz, refuses rule-breaking shots), title.py
-docs/                PIPELINE_24_STEPS.md (the method, step by step) and FIX_TABLE.md
+styles/              visual style packs (+ _template.json for custom styles)
+docs/                PIPELINE_24_STEPS.md, STYLES.md, REFERENCE_LESSONS.md, FIX_TABLE.md
 fp, setup.sh         tool runner; builds ~/.ai-film-pipeline/venv on first run
 tools/make_demo.py   synthetic demo film
 ```

@@ -1,13 +1,43 @@
 ---
 name: ai-film-pipeline
-description: Make generative-AI short films, trailers and ads end to end. Claude directs 11 specialist agents through a 24-step pipeline (brief, scene design, character sheets, location plates, Blender previz, Seedance 2.5 prompts and takes, dailies, a beat-locked edit, a human-in-the-loop web editor, colour grade, titles, subtitles, three-layer mix, mastering, verification) using the ImagineArt connector for images, video and music. Use when the user wants to make, plan, generate, edit or finish an AI video, film, trailer, music-video-style cut or game-trailer-style short, or asks to run or continue a film made with this pipeline.
+description: Make generative-AI short films, trailers and ads end to end in any visual style (realistic live action, claymation, pixel art, paper cutout, stylized 3D, anime, or a custom style). Claude directs 11 specialist agents through a 24-step pipeline (brief, scene design, character sheets, location plates, Blender previz, Seedance 2.5 prompts and takes, dailies, a beat-locked edit, a human-in-the-loop web editor, colour grade, titles, subtitles, three-layer mix, mastering, verification) using the ImagineArt connector for images, video and music. Use when the user wants to make, plan, generate, edit or finish an AI video, film, trailer, music-video-style cut or game-trailer-style short, or asks to run or continue a film made with this pipeline.
 ---
 
 # AI Film Pipeline: you are the director
 
 You run a film crew made of subagents. Every hand-off is checked by a critic, and the human signs off at
-every gate. Read `${CLAUDE_SKILL_DIR}/../../docs/PIPELINE_24_STEPS.md` (the method) and
-`${CLAUDE_SKILL_DIR}/../../docs/FIX_TABLE.md` (symptom -> cause -> fix) at the start of any film session.
+every gate. At the start of any film session, read:
+- `${CLAUDE_SKILL_DIR}/../../docs/PIPELINE_24_STEPS.md`: the method
+- `${CLAUDE_SKILL_DIR}/../../docs/STYLES.md`: visual styles
+- `${CLAUDE_SKILL_DIR}/../../docs/REFERENCE_LESSONS.md`: what makes an AI trailer look top-tier
+- `${CLAUDE_SKILL_DIR}/../../docs/FIX_TABLE.md`: symptom -> cause -> fix
+
+## The first question is always the style
+AI filmmaking isn't one look. Before anything else, ask the user (AskUserQuestion) which visual style the
+film is: **Realistic cinematic**, **Claymation**, **Pixel art**, **Paper cutout**, **Stylized 3D**, **Anime**, or a
+custom style (built with them from `styles/_template.json`). `fp styles` lists the packs. Then run
+`fp new <film> --style <id> --duration <s>`. The pack is frozen into the film and drives every stage:
+- the LOOK block and how characters, sets and vehicles are described
+- motion language (for example stop-motion on twos) and style constraints in every video prompt
+- camera and lighting menus and pacing targets for the scene designer
+- grade defaults, target look metrics and post effects (frame stepping, pixel grid and palette, paper texture)
+- the critic's style-break checks
+
+Never mix styles inside a film unless the brief asks for it.
+
+## The quality bar (measured on a top-tier reference trailer)
+Density and light make the difference.
+- **Setups.** Aim for about `pacing.setups_per_minute` distinct setups per minute (realistic: 40; the reference had
+  ~45 in 66 s with a median shot of 0.96 s).
+- **World.** Use many one-shot vignette characters and locations, not three leads in seven places.
+- **Dialogue.** Short, characterful lines in about half the shots.
+- **Lighting.** Motivated per shot, from real sources.
+- **Lens.** Vary it per shot: close-ups, low angles, over-the-shoulder with a foreground, inserts, aerials.
+- **Structure.** The title by about 5 s and a 0.2-0.5 s montage on the drop.
+- **Grade.** Deep blacks and rich colour, not milky haze.
+
+`fp scenes` warns when a plan is too thin. Treat its PACING and WORLD warnings as errors unless the user
+deliberately wants a small film. To keep credits sane, use 4-6 s clips for montage vignettes.
 
 **Tool runner.** Every command below is `${CLAUDE_SKILL_DIR}/../../fp <command> <film> ...` (agents and slash
 commands use the same file as `${CLAUDE_PLUGIN_ROOT}/fp`). Run `fp --help` for the full list. Films are created
@@ -41,7 +71,8 @@ plus `ffmpeg`).
 5. Ask before rendering. Edit decisions are multiple-choice questions (AskUserQuestion) with one
    recommended option. If the user explicitly says to go straight to the finished film, you may skip a
    gate, but say which gate you skipped.
-6. Every image and video prompt begins with the LOOK block (`fp look`), verbatim.
+6. Every image and video prompt begins with the film's style LOOK block (`fp look --film <film>`), verbatim,
+   and every video prompt names its own motivated LIGHTING. Never fall back to a generic hazy look.
 7. Everything is original: no real people, no existing game, film or brand characters, logos or text.
    Reference trailers are studied for pacing only and never used as generation inputs.
 8. **Show, don't just list paths.** Send boards, sheets, grids and the finished film to the user in chat
@@ -85,7 +116,7 @@ films/<film>/
 ## Key commands
 | Step | Command |
 |---|---|
-| 01 | `fp new <film>` and `fp status <film>` |
+| 01 | `fp styles`, `fp new <film> --style <id> --duration <s>` (or `fp style <film> <id>`), `fp status <film>` |
 | 03 | `fp scenes <film>`: validate the rules, write the table and the board image |
 | 05-06 | `fp sheet-prompts <film>` and `fp plate-prompts <film>` |
 | assets | `fp asset <film> <path-in-film> <asset-id-or-url>`: download and register |
@@ -94,6 +125,7 @@ films/<film>/
 | QA | `fp grid <film> <video> --step 0.5`: frame grid to Read and judge |
 | 13 | `fp transcribe <film>` and `fp dailies <film>` |
 | 14-17 | `fp beats <film> <song>`, `fp board-init`, `fp orderboard`, `fp editor <film>` (http://localhost:8765), `fp board-diff`, `fp render-cut` |
+| 18 | `fp master` then `fp lookmatch <film>` (measure) and `fp lookmatch <film> --apply` (closed-loop grade fit on sampled frames; `--ref <film.mp4>` to match a reference), then re-master |
 | 18-21 | `fp grade-preview <film> <clip>`, `blender -b -P <plugin>/blender/title.py -- --text WORD --font <otf> --out <path>`, `fp subs <film>` |
 | 22-23 | `fp stems <film>`, `fp echo <film>`, `fp mix <film>` |
 | 24 | `fp master <film>`, `fp verify <film> 12_master/<film>_final.mp4 --final`, `fp package <film>` |
@@ -123,3 +155,8 @@ films/<film>/
 - Generated songs are far louder than AI-clip dialogue: `fp mix` gain-stages speech to -20 LUFS, puts the
   music 10 dB under dialogue, then limits to -14 LUFS / -1 dBTP. If verify hears no speech, fix the mix.
 - Flawed takes: trim to the clean section in the edit before paying for a retake (log why in the brief).
+- Grade by measurement, not by eye alone: a one-shot formula overshoots because halation, curves and saturation
+  interact. `fp lookmatch --apply` searches the real grade chain on sampled frames and refuses to apply twice
+  without a re-master in between.
+- The style post only enforces the grid, palette and stepping. The style itself must come from generation, so
+  reject sheets, plates and takes that drift out of the style rather than hoping post will fix them.

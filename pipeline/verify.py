@@ -83,6 +83,16 @@ def verify(proj: Path, path: Path, final: bool = False) -> int:
             problems.append(f"integrated {L['I']} LUFS (target -14)")
         if L.get("TP") is not None and L["TP"] > -1.0:
             problems.append(f"true peak {L['TP']} dBTP > -1")
+    if final:
+        from .lookstats import measure
+        from .style import load as load_style
+        tgt = load_style(proj)["target_metrics"]
+        lk = measure(path)
+        rep["look"] = {"measured": lk, "target": tgt}
+        if lk["black_point"] > tgt["black_point"] + 0.03:
+            problems.append(f"milky blacks: black point {lk['black_point']} vs target {tgt['black_point']} (fp lookmatch --apply)")
+        if lk["saturation"] < tgt["saturation"] * 0.75:
+            problems.append(f"washed-out colour: saturation {lk['saturation']} vs target {tgt['saturation']} (fp lookmatch --apply)")
     rep["problems"] = problems
     rep["not_checked"] = ["Nobody watched the full picture in real time; only the 12-frame sheet was sampled.",
                           "No human listened; speech was checked by ASR only, music/FX balance not judged."]
@@ -93,6 +103,9 @@ def verify(proj: Path, path: Path, final: bool = False) -> int:
         t = rep["transcript"]
         print(f"SPEECH  match {t['match_ratio']}; missing: {t['missing_from_mix'][:8]}; unexpected: {t['unexpected_in_mix'][:8]}")
     print(f"FRAMES  {sheet}")
+    if "look" in rep:
+        m, t = rep["look"]["measured"], rep["look"]["target"]
+        print("LOOK    " + ", ".join(f"{k} {m[k]} (target {t[k]})" for k in t if k in m))
     for p in problems:
         print(f"PROBLEM {p}")
     for nc in rep["not_checked"]:
