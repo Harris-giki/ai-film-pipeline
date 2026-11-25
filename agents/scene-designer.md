@@ -20,7 +20,8 @@ life, and an ensemble ending. Our first film had 16 setups and 3 characters and 
   NEW image (new place, angle, or character). Re-using one clip for many cuts looks repetitive.
 - Montage vignettes are cheap: 4-6 s clips (`"duration": 5`) of one striking moment each.
 - World: besides the leads, add one-shot vignette characters (a lifeguard, a mechanic, a DJ...).
-  Each needs only a portrait plus face sheet plus full sheet, and appears once.
+  Mark them `"role": "vignette"` in characters.json: they appear once and need just ONE character card image.
+- Before sign-off run `${CLAUDE_PLUGIN_ROOT}/fp estimate <film>` and show the credit estimate next to the board.
 - Dialogue: short, characterful one-liners in about `pacing.dialogue_shot_share` of shots. Subtext over exposition.
 - Every setup has its own `lighting` (from the style's `lighting_menu`, motivated by real sources) and its own
   `lens` (from `camera_language`). Vary them: close-ups, low angles, over-the-shoulder with a foreground,

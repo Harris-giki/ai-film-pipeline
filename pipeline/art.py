@@ -47,6 +47,17 @@ def sheet1_prompt(st: dict, name: str, c: dict, outfit: str, garments: str, vari
         f"{garments}. {st['sheet_backdrop']} Same identity as the face sheet. No text, no labels, no logos.")
 
 
+def card_prompt(st: dict, name: str, c: dict, outfit: str, garments: str) -> str:
+    """One-image reference for a vignette character who appears in a single setup (a third of the cost of
+    portrait + face sheet + turnaround, and enough for consistency within one shot)."""
+    return with_look(st["look"],
+        f"Keep the reference light even and true to colour for {name}'s character card.",
+        f"Character card, 16:9, of {st['character_medium']}, named {name}: {_desc(c)}. Left half: one full-body front view, "
+        f"head to feet, height {c.get('height', 1.75)} m in proportion. Right half: two head-and-shoulders close-ups of the same "
+        f"face, neutral front and three-quarter. Wearing ({outfit}): {garments}. {st['sheet_backdrop']} "
+        "Identical identity in all three views. No text, no labels, no logos.")
+
+
 def plate_prompt(st: dict, loc: str, l: dict, tod: str) -> str:
     return with_look(st["look"],
         f"Keep the {tod} light of {l.get('desc', loc)} as the plate's grade; brightness and palette come from here.",
@@ -72,7 +83,9 @@ def write_sheet_prompts(proj: Path) -> int:
         for outfit, garments in outfits.items():
             d = proj / "04_sheets" / name / outfit
             d.mkdir(parents=True, exist_ok=True)
-            if outfit == base:
+            if c.get("role") == "vignette":
+                (d / "prompt_card.txt").write_text(card_prompt(st, name, c, outfit, garments) + "\n\nREFS: none (text to image)\n")
+            elif outfit == base:
                 (d / "prompt_1_portrait_4x5.txt").write_text(portrait_prompt(st, name, c, outfit, garments))
                 (d / "prompt_2_sheet2_face.txt").write_text(sheet2_prompt(st, name, outfit) +
                     "\n\nREFS: @Image1 = portrait_4x5.png (NOT the turnaround)\n")

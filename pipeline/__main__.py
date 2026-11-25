@@ -121,6 +121,10 @@ def main(argv=None):
         (["scenes"], {"nargs": "+"}), help="11 lint + print Seedance prompt and reference URLs per shot")
     dm = sp.add_parser("demo", help="build a synthetic demo film (no credits) to try every stage")
     dm.set_defaults(fn=lambda a: __import__("runpy").run_path(str(ROOT / "tools" / "make_demo.py"), run_name="__main__") and 0)
+    add("estimate", lambda a: __import__("pipeline.estimate", fromlist=["x"]).estimate(project(a.film), a.clip10, a.image, a.music, a.takes),
+        (["--clip10"], {"type": float, "default": 2678, "help": "credits per 10 s clip"}), (["--image"], {"type": float, "default": 250}),
+        (["--music"], {"type": float, "default": 300}), (["--takes"], {"type": float, "default": 1.0}),
+        help="03 credit estimate for the planned film")
     sty = sp.add_parser("styles", help="list visual style packs")
     sty.set_defaults(fn=lambda a: __import__("pipeline.style", fromlist=["x"]).list_cmd())
     lk = sp.add_parser("look", help="04 print the film's LOOK block or --check files")

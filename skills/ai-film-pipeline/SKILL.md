@@ -37,7 +37,8 @@ Density and light make the difference.
 - **Grade.** Deep blacks and rich colour, not milky haze.
 
 `fp scenes` warns when a plan is too thin. Treat its PACING and WORLD warnings as errors unless the user
-deliberately wants a small film. To keep credits sane, use 4-6 s clips for montage vignettes.
+deliberately wants a small film. To keep credits sane, use 4-6 s clips for montage vignettes, and mark one-shot characters `"role": "vignette"` in
+characters.json. They get a single character card (full body plus two faces) instead of three sheets.
 
 **Tool runner.** Every command below is `${CLAUDE_SKILL_DIR}/../../fp <command> <film> ...` (agents and slash
 commands use the same file as `${CLAUDE_PLUGIN_ROOT}/fp`). Run `fp --help` for the full list. Films are created
@@ -117,7 +118,7 @@ films/<film>/
 | Step | Command |
 |---|---|
 | 01 | `fp styles`, `fp new <film> --style <id> --duration <s>` (or `fp style <film> <id>`), `fp status <film>` |
-| 03 | `fp scenes <film>`: validate the rules, write the table and the board image |
+| 03 | `fp scenes <film>`: validate the rules, write the table and the board image; `fp estimate <film>`: credit estimate before anything is generated |
 | 05-06 | `fp sheet-prompts <film>` and `fp plate-prompts <film>` |
 | assets | `fp asset <film> <path-in-film> <asset-id-or-url>`: download and register |
 | 07-08 | `fp previz-brief <film> <ID>`, then `blender -b -P <plugin>/blender/previz.py -- <shot.json>` |

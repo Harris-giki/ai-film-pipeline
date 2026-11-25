@@ -36,9 +36,14 @@ def references(proj: Path, scene: dict) -> list[dict]:
     for p in plates:
         refs.append({"tag": f"@Image{n}", "file": str(proj / "05_plates" / f"{p}.png"), "role": f"location and light ({p})"})
         n += 1
+    chars = load_json(proj / "03_scenes" / "characters.json", {})
     for c in scene.get("cast", []):
         o = scene.get("outfit", {}).get(c, "")
         base = proj / "04_sheets" / c / o
+        if chars.get(c, {}).get("role") == "vignette":
+            refs.append({"tag": f"@Image{n}", "file": str(base / "card.png"), "role": f"{c} identity and outfit", "who": c})
+            n += 1
+            continue
         refs.append({"tag": f"@Image{n}", "file": str(base / "sheet2_face.png"), "role": f"{c} face and identity", "who": c})
         refs.append({"tag": f"@Image{n+1}", "file": str(base / "sheet1_full.png"), "role": f"{c} full body and outfit", "who": c})
         n += 2
